@@ -1,0 +1,51 @@
+diff --git a/drivers/vision/npu/core/npu-util-memdump.c b/drivers/vision/npu/core/npu-util-memdump.c
+index 5711bbb..8749701 100755
+--- a/drivers/vision/npu/core/npu-util-memdump.c
++++ b/drivers/vision/npu/core/npu-util-memdump.c
+@@ -109,12 +109,13 @@ int ram_dump_fault_listner(struct npu_device *npu)
+ {
+ 	int ret = 0;
+ 	struct npu_system *system = &npu->system;
+-	u32 *tcu_dump_addr = kzalloc(system->tcu_sram.size, GFP_ATOMIC);
++	u32 *tcu_dump_addr = kzalloc(system->fw_npu_memory_buffer->size, GFP_ATOMIC);
+ 	u32 *idp_dump_addr = kzalloc(system->idp_sram.size, GFP_ATOMIC);
+ 
+ 	if (tcu_dump_addr) {
+-		memcpy_fromio(tcu_dump_addr, system->tcu_sram.vaddr, system->tcu_sram.size);
+-		pr_err("NPU TCU SRAM dump - %pK / %paB\n", tcu_dump_addr, &system->tcu_sram.size);
++		memcpy_fromio(tcu_dump_addr, system->fw_npu_memory_buffer->vaddr,
++			system->fw_npu_memory_buffer->size);
++		pr_err("NPU TCU SRAM dump - %pK / %paB\n", tcu_dump_addr, &system->fw_npu_memory_buffer->size);
+ 	} else {
+ 		pr_err("tcu_dump_addr is NULL\n");
+ 		ret= -ENOMEM;
+@@ -281,20 +282,22 @@ DECLARE_NPU_SRAM_DUMP(idp);
+ int npu_util_memdump_probe(struct npu_system *system)
+ {
+ 	BUG_ON(!system);
+-	BUG_ON(!system->tcu_sram.vaddr);
++	BUG_ON(!system->fw_npu_memory_buffer->vaddr);
+ #ifdef CONFIG_NPU_LOOPBACK
+ 	return 0;
+ #endif
+ 	atomic_set(&npu_memdump.registered, 0);
+-	npu_memdump.tcu_sram = system->tcu_sram;
++	npu_memdump.tcu_sram.vaddr = system->fw_npu_memory_buffer->vaddr;
++	npu_memdump.tcu_sram.paddr = system->fw_npu_memory_buffer->paddr;
++	npu_memdump.tcu_sram.size = system->fw_npu_memory_buffer->size;
+ 	npu_memdump.idp_sram = system->idp_sram;
+-	probe_info("%s: paddr = %08x\n", FW_MEM_LOG_NAME,
+-		   system->tcu_sram.paddr + MEM_LOG_OFFSET
++	probe_info("%s: paddr = %08llx\n", FW_MEM_LOG_NAME,
++		   system->fw_npu_memory_buffer->paddr + MEM_LOG_OFFSET
+ 		   );
+ #ifdef CONFIG_EXYNOS_NPU_DEBUG_SRAM_DUMP
+-	probe_info("%s: paddr = %08x\n", TCU_SRAM_DUMP_SYSFS_NAME,
+-		system->tcu_sram.paddr);
+-	tcu_sram_dump_size = system->tcu_sram.size;
++	probe_info("%s: paddr = %08llx\n", TCU_SRAM_DUMP_SYSFS_NAME,
++		system->fw_npu_memory_buffer->paddr);
++	tcu_sram_dump_size = system->fw_npu_memory_buffer->size;
+ 	probe_info("%s: paddr = %08x\n", IDP_SRAM_DUMP_SYSFS_NAME,
+ 		system->idp_sram.paddr);
+ 	idp_sram_dump_size = system->idp_sram.size;
