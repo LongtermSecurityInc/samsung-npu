@@ -11,6 +11,8 @@ This repository is organised as follows:
         * NPU binaries found in the firmwares of the Samsung Galaxy S20 ([`G980FXXS5CTL5`](https://www.sammobile.com/samsung/galaxy-s20/firmware/SM-G980F/XEF/download/G980FXXS5CTL5/1117440/)) and S10 ([`G970FXXS9DTK9`](https://www.sammobile.com/samsung/galaxy-s10e/firmware/SM-G970F/XEF/download/G970FXXS9DTK9/845938/)).
     * `npu_sXX_dump.bin`
         * Dumps of the NPU firmwares from running phones. These are the binaries we used in the blogpost to reverse engineer the NPU.
+* `exploit/`
+    * PoCs to get code execution in the NPU and trigger the stack buffer overflow in the Android kernel.
 * `patches/`
     * Kernel patch to re-enable memory dumps of the NPU from the kernel. The Samsung kernel version we used as a base is `G980FXXU5CTL1`.
 * `reverse/`
@@ -25,7 +27,10 @@ This repository is organised as follows:
     * `npu_firmware_extractor`
         * Tool to extract the NPU firmware from a boot image.
 
-## Reference
+## References
 
-* Reversing and Exploiting Samsung's Neural Processing Unit - *Longterm Security*
-    * [https://www.longterm.io/samsung_npu.html](https://www.longterm.io/samsung_npu.html)
+* Reversing and Exploiting Samsung's Neural Processing Unit (Part 1)
+    * *Longterm Security*: [https://www.longterm.io/samsung_npu.html](https://www.longterm.io/samsung_npu.html)
+    * *Impalabs* (mirror): [https://blog.impalabs.com/2103_reversing-samsung-npu.html](https://blog.impalabs.com/2103_reversing-samsung-npu.html)
+* Reversing and Exploiting Samsung's Neural Processing Unit (Part 2)
+    * *Impalabs*: [https://blog.impalabs.com/2110_exploiting-samsung-npu.html](https://blog.impalabs.com/2110_exploiting-samsung-npu.html)
